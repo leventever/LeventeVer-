@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Levente Ver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f0f0f0;
+        }
+        .gif-container {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .counter {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #message {
+            font-size: 20px;
+            color: #4CAF50;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="gif-container">
+        <img id="gif" src="leventever.gif" alt="Levente Ver" width="300px">
+    </div>
+    <button id="leventeBtn">Levente Ver</button>
+    <div class="counter">
+        <p id="message"></p>
+        <p id="totalCount">Toplam Levente Veren: 0</p>
+    </div>
+
+    <script>
+        // Firebase yapılandırması
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Firebase'i başlatma
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(app);
+
+        // Buton ve sayaç elementleri
+        const leventeBtn = document.getElementById("leventeBtn");
+        const totalCountElem = document.getElementById("totalCount");
+        const messageElem = document.getElementById("message");
+
+        // Butona tıklanma olayı
+        leventeBtn.addEventListener("click", () => {
+            const leventeRef = database.ref("levente_count");
+            
+            // Sayaç arttırma
+            leventeRef.transaction(currentValue => {
+                return (currentValue || 0) + 1;
+            });
+
+            // "Levente Verildi!" mesajı
+            messageElem.textContent = "Levente Verildi!";
+        });
+
+        // Firebase'den sayaç değerini alma
+        const leventeCountRef = database.ref("levente_count");
+        leventeCountRef.on("value", (snapshot) => {
+            const count = snapshot.val();
+            totalCountElem.textContent = `Toplam Levente Veren: ${count}`;
+        });
+    </script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+</body>
+</html>
+
